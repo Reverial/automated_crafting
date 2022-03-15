@@ -55,24 +55,24 @@ public class CrafterRegistryImpl extends CrafterRegistry {
         final Container container = (Container) block.getState();
         if (m == null) return false;
         if (container.isLocked() || block.getBlockPower() > 0) {
-            if (container.isLocked()) player.spigot().sendMessage(ChatMessageType.ACTION_BAR, getText("Autocrafter is locked"));
-            else player.spigot().sendMessage(ChatMessageType.ACTION_BAR, getText("Autocrafter has redstone signal blocking it"));
+            if (container.isLocked()) player.spigot().sendMessage(ChatMessageType.ACTION_BAR, getText("Autocrafter zablokowany"));
+            else player.spigot().sendMessage(ChatMessageType.ACTION_BAR, getText("Autocrafter zablokowany przez sygnał redstone"));
             return true;
         }
 
         if (!ConfigFile.isMaterialAllowed(m.getType())) {
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, getText("Crafting this item is disabled"));
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, getText("Tworzenie tego przedmiotu jest zablokowane"));
             return true;
         }
 
         final Set<CraftingRecipe> recipes = recipeLoader.getRecipesFor(m);
         if (recipes == null || recipes.size() == 0) {
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, getText("Autocrafter can't craft this item"));
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, getText("Autocrafter nie może wytworzyć tego przedmiotu"));
             return false;
         }
 
         //Inform the player how many recipes are being accepted right now
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, getText("Autocrafter is accepting " + recipes.size() + " recipe(s)"));
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, getText("Autocrafter tworzy " + recipes.size() + " przedmiotów"));
         return true;
     }
 
