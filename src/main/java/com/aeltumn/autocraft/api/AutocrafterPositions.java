@@ -1,10 +1,11 @@
-package nl.dgoossens.autocraft.api;
+package com.aeltumn.autocraft.api;
 
+import org.bukkit.inventory.ItemStack;
+
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
-import javax.annotation.Nullable;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * An object storing information on all autocrafters in a single world.
@@ -44,14 +45,14 @@ public class AutocrafterPositions {
      * Get an autocrafter at a position.
      */
     @Nullable
-    public ItemStack get(BlockPos position) {
+    public Autocrafter get(BlockPos position) {
         ChunkIdentifier ci = new ChunkIdentifier(position);
         long l = position.subtract(ci.getPosition()).toLong();
         if (data.containsKey(ci)) {
             //Find the autocrafter that has this position long as its position
             for (Autocrafter a : data.get(ci)) {
                 if (a.getPositionAsLong() == l)
-                    return a.getItem();
+                    return a;
             }
         }
         return null;

@@ -1,23 +1,29 @@
-package nl.dgoossens.autocraft.api;
+package com.aeltumn.autocraft.api;
+
+import com.aeltumn.autocraft.AutomatedCrafting;
+import com.aeltumn.autocraft.RecipeLoader;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import nl.dgoossens.autocraft.AutomatedCrafting;
-import nl.dgoossens.autocraft.RecipeLoader;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
+/**
+ * Manages the existance of all autocrafters.
+ */
 public abstract class CrafterRegistry {
     private static final long SAVE_DELAY = (150) * 1000; //Wait 2.5 minutes = 150 seconds
-
-    protected ConcurrentHashMap<String, AutocrafterPositions> crafters = new ConcurrentHashMap<>();
     protected final RecipeLoader recipeLoader;
     protected final File file;
+    private final BukkitTask saveTask;
+    protected ConcurrentHashMap<String, AutocrafterPositions> crafters = new ConcurrentHashMap<>();
     protected long saveTime = Long.MAX_VALUE;
 
     public CrafterRegistry() {
@@ -27,11 +33,18 @@ public abstract class CrafterRegistry {
         load();
 
         // periodically try to save if the data is marked as dirty
-        Bukkit.getScheduler().runTaskTimer(AutomatedCrafting.INSTANCE, () -> {
+        saveTask = Bukkit.getScheduler().runTaskTimer(AutomatedCrafting.INSTANCE, () -> {
             if (System.currentTimeMillis() > saveTime) {
                 forceSave();
             }
         }, 40, 40);
+    }
+
+    /**
+     * Shuts down the crafter registry and ends any pending tasks.
+     */
+    public void shutdown() {
+        saveTask.cancel();
     }
 
     /**
@@ -88,6 +101,16 @@ public abstract class CrafterRegistry {
      * Destroys the auto crafter at a given location.
      */
     public abstract void destroy(final Location l);
+
+    /**
+     * Ticks the auto crafter on the given block.
+     */
+    public abstract void tick(final Block block);
+
+    /**
+     * Returns whether there is an autocrafter at the given block.
+     */
+    public abstract boolean isAutocrafter(final Block block);
 
     /**
      * Loads all autocrafters from the saved configuration file.
